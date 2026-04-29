@@ -53,18 +53,14 @@
 <audio id="audio-player" src="audio/3-6.mp3"></audio>
 
 <script>
-    $("#flipbook").turn({
-        width: 1000,
-        height: 600,
+     $("#flipbook").turn({
+        width: 842,  // El doble del ancho de una A4 (aprox)
+        height: 595, // El alto de una A4 (aprox)
         autoCenter: true,
         display: 'double',
         acceleration: true,
-        when: {
-            turning: function(event, page, view) {
-                controlMusica(page);
-            }
-        }
-    });
+        elevation: 50
+     });
 
     function controlMusica(page) {
         const player = document.getElementById('audio-player');
