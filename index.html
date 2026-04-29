@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Feliz Cumpleaños</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/turn.min.js"></script>
+</head>
+<body>
+
+<div class="book-container">
+    <div id="flipbook">
+        <div class="hard" style="background-image:url('images/1.png')"></div>
+        <div style="background-image:url('images/2.png')"></div>
+        <div style="background-image:url('images/3.png')"></div>
+        <div style="background-image:url('images/4.png')"></div>
+        <div style="background-image:url('images/5.png')"></div>
+        <div class="hard" style="background-image:url('images/6.png')"></div>
+    </div>
+</div>
+
+<audio id="audio-player" src="audio/cancion1.mp3"></audio>
+
+<script>
+    $("#flipbook").turn({
+        width: 1000,
+        height: 600,
+        autoCenter: true,
+        display: 'double', // Muestra 2 páginas
+        acceleration: true,
+        elevation: 50,
+        when: {
+            turning: function(event, page, view) {
+                controlMusica(page);
+            }
+        }
+    });
+
+    function controlMusica(page) {
+        const player = document.getElementById('audio-player');
+        
+        // Lógica para cambiar canciones según el rango de páginas
+        if (page >= 1 && page <= 2) {
+            cambiarSrc(player, "audio/cancion1.mp3");
+        } else if (page >= 3 && page <= 5) {
+            cambiarSrc(player, "audio/cancion2.mp3");
+        } else {
+            cambiarSrc(player, "audio/final.mp3");
+        }
+    }
+
+    function cambiarSrc(player, src) {
+        if (!player.src.includes(src)) {
+            player.src = src;
+            player.play().catch(e => console.log("Esperando interacción del usuario..."));
+        }
+    }
+</script>
+
+</body>
+</html>
