@@ -52,14 +52,16 @@
 
 <audio id="audio-player" src="audio/cancion1.mp3"></audio>
 
+// El reproductor comienza con la canción 1
+<audio id="audio-player" src="audio/1.mp3"></audio>
+
 <script>
     $("#flipbook").turn({
         width: 1000,
         height: 600,
         autoCenter: true,
-        display: 'double', // Muestra 2 páginas
+        display: 'double',
         acceleration: true,
-        elevation: 50,
         when: {
             turning: function(event, page, view) {
                 controlMusica(page);
@@ -69,21 +71,27 @@
 
     function controlMusica(page) {
         const player = document.getElementById('audio-player');
-        
-        // Lógica para cambiar canciones según el rango de páginas
-        if (page >= 1 && page <= 2) {
-            cambiarSrc(player, "audio/cancion1.mp3");
-        } else if (page >= 3 && page <= 5) {
-            cambiarSrc(player, "audio/cancion2.mp3");
+        let nuevaCancion = "";
+
+        // Lógica de canciones:
+        if (page <= 2) {
+            nuevaCancion = "audio/1.mp3"; // Canción 1 para portada y pág 2
+        } else if (page > 2 && page <= 6) {
+            nuevaCancion = "audio/2.mp3"; // Canción 2 para páginas 3, 4, 5 y 6
         } else {
-            cambiarSrc(player, "audio/final.mp3");
+            nuevaCancion = "audio/3.mp3"; // Canción 3 para el resto
         }
+
+        cambiarSrc(player, nuevaCancion);
     }
 
     function cambiarSrc(player, src) {
+        // Solo cambia y reinicia si la canción es distinta a la que ya suena
         if (!player.src.includes(src)) {
             player.src = src;
-            player.play().catch(e => console.log("Esperando interacción del usuario..."));
+            player.play().catch(error => {
+                console.log("El navegador bloqueó el autoplay. Sonará al interactuar.");
+            });
         }
     }
 </script>
