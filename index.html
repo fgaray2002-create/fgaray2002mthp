@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Feliz Cumpleaños</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -55,41 +55,41 @@
 <audio id="audio-player" src="audio/3-6.mp3"></audio>
 
 <script>
-     $("#flipbook").turn({
-        width: 842,  // El doble del ancho de una A4 (aprox)
-        height: 595, // El alto de una A4 (aprox)
+    const esMovil = window.innerWidth < 800;
+    
+    $("#flipbook").turn({
+        width: esMovil ? window.innerWidth * 0.95 : 842,
+        height: esMovil ? (window.innerWidth * 0.95) * 1.41 : 595,
         autoCenter: true,
-        display: 'double',
+        display: esMovil ? 'single' : 'double',
         acceleration: true,
-        elevation: 50
-     });
+        elevation: 50,
+        when: {
+            turning: function(event, page, view) {
+                controlMusica(page);
+            }
+        }
+    });
 
     function controlMusica(page) {
         const player = document.getElementById('audio-player');
         let nuevaCancion = "";
 
-        // Lógica de canciones:
-        if (page <= 2) {
-            nuevaCancion = "audio/3-6.mp3"; // Canción 1 para portada y pág 2
-        } else if (page > 2 && page <= 6) {
-            nuevaCancion = "audio/7-8.mp3"; // Canción 2 para páginas 3, 4, 5 y 6
+        // Ajusta aquí qué canción suena según la página
+        if (page <= 10) {
+            nuevaCancion = "audio/1.mp3";
+        } else if (page > 10 && page <= 25) {
+            nuevaCancion = "audio/2.mp3";
         } else {
-            nuevaCancion = "audio/23-24.mp3"; // Canción 3 para el resto
+            nuevaCancion = "audio/3.mp3";
         }
 
-        cambiarSrc(player, nuevaCancion);
-    }
-
-    function cambiarSrc(player, src) {
-        // Solo cambia y reinicia si la canción es distinta a la que ya suena
-        if (!player.src.includes(src)) {
-            player.src = src;
-            player.play().catch(error => {
-                console.log("El navegador bloqueó el autoplay. Sonará al interactuar.");
-            });
+        if (!player.src.includes(nuevaCancion)) {
+            player.src = nuevaCancion;
+            player.play().catch(e => console.log("Esperando interacción..."));
         }
     }
 </script>
-
+    
 </body>
 </html>
