@@ -55,19 +55,24 @@
 <audio id="audio-player" src="audio/3-6.mp3"></audio>
 
 <script>
+    // 1. Configuraciones iniciales
     const esMovil = window.innerWidth < 800;
-    // IMPORTANTE: Definimos 'player' fuera para que todas las funciones lo vean
+
+    // 2. Definir el reproductor (Aseguramos que sea global)
     const player = document.getElementById('audio-player');
 
-    // Desbloqueo de audio para navegadores (clic en cualquier parte)
+    // 3. Función de desbloqueo de audio
     function activarAudio() {
-        player.play().catch(e => console.log("Esperando clic para sonar..."));
+        if (player) {
+            player.play().catch(e => console.log("Esperando interacción..."));
+        }
         document.removeEventListener('click', activarAudio);
         document.removeEventListener('touchstart', activarAudio);
     }
     document.addEventListener('click', activarAudio);
     document.addEventListener('touchstart', activarAudio);
 
+    // 4. Inicializar Flipbook
     $("#flipbook").turn({
         width: esMovil ? window.innerWidth * 0.95 : 842,
         height: esMovil ? (window.innerWidth * 0.95) * 1.41 : 595,
@@ -77,17 +82,27 @@
         elevation: 50,
         when: {
             turning: function(event, page, view) {
-                controlMusica(page);
+                // El try/catch evita que el libro se congele si la música falla
+                try {
+                    controlMusica(page);
+                } catch (e) {
+                    console.error("Error en controlMusica:", e);
+                }
             }
         }
     });
 
+    // 5. Función de control de música corregida
     function controlMusica(page) {
+        // Verificación extra: si por alguna razón 'player' no existe, abortamos
+        const audio = document.getElementById('audio-player');
+        if (!audio) return;
+
         let nuevaCancion = "";
 
-        // Ajuste de rangos según lo que pediste
+        // Lógica de tus páginas
         if (page <= 3) {
-            nuevaCancion = "Vals.mp3"; // Agregué 'audio/' si es que está en esa carpeta
+            nuevaCancion = "audio/Vals.mp3"; 
         } 
         else if (page >= 4 && page <= 7) {
             nuevaCancion = "audio/3-6.mp3";
@@ -96,22 +111,23 @@
             nuevaCancion = "audio/7-8.mp3";
         } 
         else if (page >= 12 && page <= 23) {
-            nuevaCancion = "Vals.mp3";
+            nuevaCancion = "audio/Vals.mp3";
         }
         else if (page >= 24 && page <= 27) {
             nuevaCancion = "audio/23-24.mp3";
         }
-        else if (page >= 28) {
-            nuevaCancion = "0.mp3"; // Agregué 'audio/' para mantener consistencia
+        else {
+            nuevaCancion = "audio/0.mp3";
         }
 
-        // Verificación de seguridad para que no falle el paso de página
-        if (player && nuevaCancion !== "") {
-            // Solo cambia si la canción es distinta a la actual
-            if (!player.src.endsWith(nuevaCancion)) {
-                player.src = nuevaCancion;
-                player.play().catch(e => console.log("El audio sonará al interactuar"));
-            }
+        // Comparar solo el nombre del archivo para evitar líos con rutas completas
+        const actual = audio.src.split('/').pop();
+        const destino = nuevaCancion.split('/').pop();
+
+        if (actual !== destino) {
+            audio.src = nuevaCancion;
+            audio.load();
+            audio.play().catch(err => console.log("Reproducción bloqueada por navegador"));
         }
     }
 </script>
