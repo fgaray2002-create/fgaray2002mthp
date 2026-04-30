@@ -12,6 +12,7 @@
 
 <div class="book-container">
     <div id="flipbook">
+        <!-- Imágenes en la raíz -->
         <div class="hard" style="background-image:url('1.png')"></div>
         <div style="background-image:url('1.2.png')"></div>
         <div style="background-image:url('2.png')"></div>
@@ -52,19 +53,16 @@
     </div>
 </div>
 
-<audio id="audio-player" src="audio/3-6.mp3"></audio>
+<!-- Audio inicial en la raíz -->
+<audio id="audio-player" src="Vals.mp3" loop></audio>
 
 <script>
-    // 1. Configuraciones iniciales
     const esMovil = window.innerWidth < 800;
-
-    // 2. Definir el reproductor (Aseguramos que sea global)
     const player = document.getElementById('audio-player');
 
-    // 3. Función de desbloqueo de audio
     function activarAudio() {
         if (player) {
-            player.play().catch(e => console.log("Esperando interacción..."));
+            player.play().catch(e => console.log("Clic para activar sonido"));
         }
         document.removeEventListener('click', activarAudio);
         document.removeEventListener('touchstart', activarAudio);
@@ -72,7 +70,6 @@
     document.addEventListener('click', activarAudio);
     document.addEventListener('touchstart', activarAudio);
 
-    // 4. Inicializar Flipbook
     $("#flipbook").turn({
         width: esMovil ? window.innerWidth * 0.95 : 842,
         height: esMovil ? (window.innerWidth * 0.95) * 1.41 : 595,
@@ -82,55 +79,48 @@
         elevation: 50,
         when: {
             turning: function(event, page, view) {
-                // El try/catch evita que el libro se congele si la música falla
                 try {
                     controlMusica(page);
                 } catch (e) {
-                    console.error("Error en controlMusica:", e);
+                    console.error("Error musical:", e);
                 }
             }
         }
     });
 
-    // 5. Función de control de música corregida
     function controlMusica(page) {
-        // Verificación extra: si por alguna razón 'player' no existe, abortamos
-        const audio = document.getElementById('audio-player');
-        if (!audio) return;
-
+        if (!player) return;
         let nuevaCancion = "";
 
-        // Lógica de tus páginas
+        // Lógica de audios sin prefijos de carpeta
         if (page <= 3) {
             nuevaCancion = "Vals.mp3"; 
         } 
         else if (page >= 4 && page <= 7) {
-            nuevaCancion = "audio/3-6.mp3";
+            nuevaCancion = "3-6.mp3";
         } 
         else if (page >= 8 && page <= 11) {
-            nuevaCancion = "audio/7-8.mp3";
+            nuevaCancion = "7-8.mp3";
         } 
         else if (page >= 12 && page <= 23) {
             nuevaCancion = "Vals.mp3";
         }
         else if (page >= 24 && page <= 27) {
-            nuevaCancion = "audio/23-24.mp3";
+            nuevaCancion = "23-24.mp3";
         }
         else {
             nuevaCancion = "0.mp3";
         }
 
-        // Comparar solo el nombre del archivo para evitar líos con rutas completas
-        const actual = audio.src.split('/').pop();
+        const actual = player.src.split('/').pop();
         const destino = nuevaCancion.split('/').pop();
 
         if (actual !== destino) {
-            audio.src = nuevaCancion;
-            audio.load();
-            audio.play().catch(err => console.log("Reproducción bloqueada por navegador"));
+            player.src = nuevaCancion;
+            player.load();
+            player.play().catch(err => console.log("Audio pausado"));
         }
     }
 </script>
-    
 </body>
 </html>
